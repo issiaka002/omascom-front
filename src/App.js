@@ -1,19 +1,43 @@
-import { Space } from "antd";
+
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./App.css";
-import AppFooter from "./Components/AppFooter";
-import AppHeader from "./Components/AppHeader";
-import PageContent from "./Components/PageContent";
-import SideMenu from "./Components/SideMenu";
+import RouterCommercial from "./Pages/Commercial/RouterCommercial";
+import RouterSousAdv from "./Pages/SousAdv/RouterSousAdv";
+import AuthRouter from "./Pages/Auth/AuthRouter";
+import AuthGuardCommercial from "./_guard/AuthGuardCommercial";
+import Login from "./Pages/Auth/Login";
+import AuthGuardSousAdv from "./_guard/AuthGuardSousAdv";
+import RouterAdv from "./Pages/Adv/RouterAdv";
 
 function App() {
   return (
-    <div className="App">
-      <AppHeader />
-      <div className="SideMenuAndPageContent">
-        <SideMenu></SideMenu>
-        <PageContent></PageContent>
-      </div>
-      <AppFooter />
+    <div>
+      <BrowserRouter>
+        <Routes>
+
+            <Route path="/*" element={<Login/>}/>
+
+            <Route path="/commercial/*" element={
+              <AuthGuardCommercial>
+                  <RouterCommercial/>
+              </AuthGuardCommercial>
+            }/>
+            
+            <Route path="/sousadv/*" element={
+              <AuthGuardSousAdv>
+                <RouterSousAdv/>
+              </AuthGuardSousAdv>
+            
+            }/>
+
+            <Route path="/adv/*" element={
+              <RouterAdv/>
+            }/>
+
+            <Route path='/auth/*' element={<AuthRouter/> } />
+
+        </Routes>
+      </BrowserRouter>
     </div>
   );
 }
