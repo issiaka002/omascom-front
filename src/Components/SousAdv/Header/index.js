@@ -5,11 +5,9 @@ import { connexionService } from "../../../_services/connexion.service";
 import { commercialService } from './../../../_services/commercial.service';
 
 function HeaderSousAdv() {
-  const [comments, setComments] = useState([]);
-  
-
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [notification, setNotification] = useState([]);
+  const [user, setUser] = useState("");
 
   var today = new Date();
   var annee = today.getFullYear();
@@ -27,9 +25,9 @@ function HeaderSousAdv() {
   useEffect(() => {
     connexionService.howIsLogIn()
       .then(resp=>{
+          setUser(resp.data.nom)
           commercialService.getNotification(resp.data.contactSim,lastWeekDay,dateFormatted)
             .then(res=>{
-                //console.log("Notification : "+res.data.Reponse);
                 setNotification(res.data.Reponse)
             }).catch(err=>console.error(err));
       }).catch(err=>console.error(err));
@@ -41,15 +39,6 @@ function HeaderSousAdv() {
       
       <h3>Omascom</h3>
       <Space>
-          
-          <Badge count={comments.length} dot>
-           <MailOutlined
-            style={{ fontSize: 15, color: 'white' }}
-             onClick={() => {
-               
-             }}
-           />  
-          </Badge>
           <Badge count={notification.length} dot>
            <BellOutlined
             style={{ fontSize: 15, color: 'white' }}
@@ -61,6 +50,10 @@ function HeaderSousAdv() {
           
           <Badge>
               <UserAddOutlined style={{fontSize:15, color:"white"}}/>
+          </Badge>
+
+          <Badge>
+              <span style={{fontWeight:'bold', color:'white'}}>{user}</span>
           </Badge>
       </Space>
       
@@ -85,6 +78,7 @@ function HeaderSousAdv() {
             }}
           ></List>
         </Drawer>
+        
     </div>
   );
 }

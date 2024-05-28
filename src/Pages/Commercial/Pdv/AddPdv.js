@@ -140,7 +140,7 @@ const AddPdv = () => {
 
   return (
     <div className="">
-      {contextHolder}
+      
       <h2>Ajouter un point de vente</h2>
 
       <div className="AddPdv">

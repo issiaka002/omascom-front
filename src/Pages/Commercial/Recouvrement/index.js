@@ -1,4 +1,4 @@
-import { Avatar, Button, List } from "antd";
+import { Avatar, Button, List, Spin } from "antd";
 import React, { useEffect, useState } from "react";
 import { connexionService } from "../../../_services/connexion.service";
 
@@ -9,13 +9,10 @@ import { useNavigate } from "react-router-dom";
 const Recouvrement = () => {
   const [pdvs, setPdvs] = useState([]);
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(true)
 
   const handleViewDetail = (contactSim) => {
     navigate("/commercial/addRecouvrement/" + contactSim);
-  };
-
-  const handleViewDetailpdv = (contactSim) => {
-    navigate("/commercial/pdv/detail/" + contactSim);
   };
 
   useEffect(() => {
@@ -27,8 +24,7 @@ const Recouvrement = () => {
             .getPdvsHasCreance(res.data.contactSim)
             .then((resps) => {
               setPdvs(resps.data.Reponse);
-              //setLoading(false);
-              //console.log("pdvs:", resps.data.Reponse);
+              setLoading(false);
             })
             .catch((err) => console.error("Erreur :", err));
         }
@@ -37,6 +33,19 @@ const Recouvrement = () => {
         console.error("Erreur :", error);
       });
   }, []);
+
+
+  if (loading) {
+    return (
+      <div
+        
+      >
+        <Spin size="large" className="custom-spin" >
+            
+        </Spin>
+      </div>
+    );
+  }
 
   return (
     <div className="Recouvrement">
@@ -62,7 +71,7 @@ const Recouvrement = () => {
                   <span className="espace">Creances :{item.creances}</span>
                   <span className="espace">
                     <Button
-                      type="primary"
+                      style={{backgroundColor:'orange'}}
                       shape="circle"
                       onClick={() => handleViewDetail(item.contactSim)}
                       icon={<MoneyCollectOutlined />}

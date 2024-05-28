@@ -56,6 +56,22 @@ body{
     color: black !important;
 }
 
+.custom-spin .ant-spin-dot-item{
+    background-color: rgb(255, 213, 0); /* Change this to the color you want */
+  }
+
+.custom-spin2 .ant-spin-dot-item{
+    background-color: #222; /* Change this to the color you want */
+}
+
+.tbl_transaction .ant-spin-dot-item{
+    background-color: rgb(255, 213, 0); 
+}
+
+.tbl_transaction2 .ant-spin-dot-item{
+    background-color: #222; 
+}
+
 .SideMenuAndPageContent{
     display: flex;
     flex: 1;

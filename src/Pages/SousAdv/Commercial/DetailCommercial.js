@@ -58,7 +58,6 @@ const DetailCommercial = () => {
       .getCommercialByContact(params.contact)
       .then((res) => {
         setCommercial(res.data.Reponse);
-        console.log(res.data.Reponse)
       })
       .catch((error) => {
         console.error("Erreur :", error);
@@ -449,7 +448,7 @@ const DetailCommercial = () => {
       </Divider>
       <div>
         <Space size={20} direction="vertical">
-          <Table
+          <Table className="tbl_transaction2"
             loading={loading}
             columns={columns}
             dataSource={transaction}
@@ -460,7 +459,7 @@ const DetailCommercial = () => {
 
       <Divider orientation="left">Point de ventes</Divider>
       
-      <Table
+      <Table className="tbl_transaction2"
         loading={loadingpdv}
         size="small"
         columns={[

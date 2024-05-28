@@ -2,23 +2,42 @@ import React, { useEffect, useState } from "react";
 import "./style.css";
 import { useParams } from "react-router-dom";
 import { TransactionService } from "../../../_services/transaction.service";
-import { Descriptions, Divider } from "antd";
+import { Descriptions, Divider, Spin } from "antd";
 import { CheckOutlined } from "@ant-design/icons";
 
 const TransactionDetail = () => {
   const params = useParams();
   const [transaction, setTransaction] = useState([]);
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     TransactionService.getTransactionByReference(params.reference)
       .then((res) => {
-        console.log("Transaction :" + res.data.Reponse.recu.reference);
         setTransaction(res.data.Reponse.recu);
+        setLoading(false)
       })
       .catch((error) => {
         console.error("Erreur :", error);
       });
   }, []);
+
+  if (loading) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+          paddingLeft: "500px",
+        }}
+      >
+        <Spin size="large" >
+            Detail de la transaction
+        </Spin>
+      </div>
+    );
+  }
 
   return (
     <div>

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { pdvService } from "../../../_services/pdv.service";
-import { Button, Descriptions, Divider, Input, Space, Table, Tag } from "antd";
+import { Button, Descriptions, Divider, Input, Space, Spin, Table, Tag } from "antd";
 import {
   EyeOutlined,
   IssuesCloseOutlined,
@@ -19,6 +19,7 @@ const DetailPdv = () => {
   const [pdvs, setPdvs] = useState({});
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
+  const [loadingMain, setLoadingMain] = useState(true);
   const [transaction, setTransaction] = useState([]);
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
@@ -35,9 +36,11 @@ const DetailPdv = () => {
       .getPdvByContactSim(params.contact)
       .then((res) => {
         setPdvs(res.data.Reponse);
+        setLoadingMain(false)
       })
       .catch((error) => {
         console.error("Erreur :", error);
+        setLoadingMain(false)
       });
     pdvService
       .getPosition(params.contact)
@@ -273,7 +276,9 @@ const DetailPdv = () => {
         />
       </div>
       <Divider />
-      <Descriptions
+      { !loadingMain ? 
+      <div>
+        <Descriptions
         contentStyle={{ fontWeight: "semi-bold", fontSize: 15 }}
         labelStyle={{ color: "#800080", fontWeight: "bold", fontSize: 16 }}
       >
@@ -304,6 +309,7 @@ const DetailPdv = () => {
           {pdvs.piece ? pdvs.piece.lieu : "..."}
         </Descriptions.Item>
       </Descriptions>
+      </div>: <Spin/>}
       <Divider orientation="left">
         Historique des transactions effectuées
       </Divider>

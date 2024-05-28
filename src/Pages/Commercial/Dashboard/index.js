@@ -9,6 +9,7 @@ import {
   Input,
   Progress,
   Space,
+  Spin,
   Statistic,
   Table,
   Tag,
@@ -40,110 +41,99 @@ const onPanelChange = (value, mode) => {
 
 const DashboardCommercial = () => {
   const navigate = useNavigate();
-  const [commercial, setCommercial] = useState([]);
-  const [pdvs, setPdvs] = useState([]);
-  const [stat, setStat] = useState([]);
-  //
-  const [loading, setLoading] = useState(true);
-  const [transaction, setTransaction] = useState([]);
-  const [statGrap, setStatGrap] = useState([]);
-  //
+  const [data, setData] = useState({
+    commercial: [],
+    pdvs: [],
+    stat: [],
+    transaction: [],
+    statGrap: [],
+  });
+  const [loading, setLoading] = useState({
+    main: true,
+    graph: true,
+  });
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
 
-  var today = new Date();
-  var annee = today.getFullYear();
-  var mois = ("0" + (today.getMonth() + 1)).slice(-2);
-  var jour = ("0" + today.getDate()).slice(-2);
-  var dateFormatted = annee + "-" + mois + "-" + jour;
-  //
+  const formatDate = (date) => {
+    const annee = date.getFullYear();
+    const mois = ("0" + (date.getMonth() + 1)).slice(-2);
+    const jour = ("0" + date.getDate()).slice(-2);
+    return `${annee}-${mois}-${jour}`;
+  };
+
+  const today = new Date();
+  const dateFormatted = formatDate(today);
+
   const lastWeek = new Date();
   lastWeek.setDate(lastWeek.getDate() - 7);
-  var annee_ = lastWeek.getFullYear();
-  var mois_ = ("0" + (lastWeek.getMonth() + 1)).slice(-2);
-  var jour_ = ("0" + lastWeek.getDate()).slice(-2);
-  var lastWeekDay = annee_ + "-" + mois_ + "-" + jour_;
+  const lastWeekDay = formatDate(lastWeek);
 
   const handleViewRecu = (reference) => {
     navigate("/commercial/transaction/detail/" + reference);
   };
 
   useEffect(() => {
-    connexionService
-      .howIsLogIn()
-      .then((res) => {
+    const fetchData = async () => {
+      try {
+        const res = await connexionService.howIsLogIn();
         if (res.data.role === "COMMERCIAL") {
-          TransactionService.getInfoTransaction(
-            res.data.contactSim,
-            dateFormatted
-          )
-            .then((respd) => {
-              setStat(respd.data);
-            })
-            .catch((err) => console.error("Erreur :", err));
+          const contactSim = res.data.contactSim;
+          const [infoTransactionRes, lastTransactionRes, statRes, commercialRes, pdvsRes] = await Promise.all([
+            TransactionService.getInfoTransaction(contactSim, dateFormatted),
+            TransactionService.get10lastTransaction(contactSim),
+            TransactionService.getStat(contactSim, lastWeekDay, dateFormatted),
+            commercialService.getCommercialByContact(contactSim),
+            commercialService.getPdvsCommercial(contactSim),
+          ]);
 
-          TransactionService.get10lastTransaction(res.data.contactSim)
-            .then((resps) => {
-              setTransaction(resps.data.Reponse);
-              setLoading(false);
-            })
-            .catch((err) => console.error("Erreur :", err));
+          setData({
+            stat: infoTransactionRes.data,
+            transaction: lastTransactionRes.data.Reponse,
+            statGrap: statRes.data.Reponse,
+            commercial: commercialRes.data.Reponse,
+            pdvs: pdvsRes.data.Reponse,
+          });
 
-          TransactionService.getStat(
-            res.data.contactSim,
-            lastWeekDay,
-            dateFormatted
-          )
-            .then((res) => {
-              setStatGrap(res.data.Reponse);
-            })
-            .catch((err) => console.error("Erreur :", err));
+          console.log(data)
+
+          setLoading({
+            main: false,
+            graph: false,
+          });
         }
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error("Erreur :", error);
-      });
-  }, []);
+        setLoading({
+          main: false,
+          graph: false,
+        });
+      }
+    };
 
-  useEffect(() => {
-    connexionService
-      .howIsLogIn()
-      .then((res) => {
-        if (res.data.role === "COMMERCIAL") {
-          commercialService
-            .getCommercialByContact(res.data.contactSim)
-            .then((res2) => {
-              setCommercial(res2.data.Reponse);
-            })
-            .catch((error) => {
-              console.error("Erreur :", error);
-            });
-
-          commercialService
-            .getPdvsCommercial(res.data.contactSim)
-            .then((resp) => {
-              setPdvs(resp.data.Reponse);
-            })
-            .catch((error) => {
-              console.error("Erreur :", error);
-            });
-        }
-      })
-      .catch((error) => {
-        console.error(
-          "Erreur lors de la récupération des informations de connexion:",
-          error
-        );
-      });
+    fetchData();
   }, []);
 
   const configg = {
-    data: statGrap,
+    data: data.statGrap,
     yField: "montant",
     colorField: "nom",
     group: true,
     style: {
       inset: 10,
+    },
+    legend: {
+      position: 'top-left',  // Change the position of the legend
+      layout: 'horizontal',  // Layout of the legend, can be 'horizontal' or 'vertical'
+    },
+    title: {
+      visible: true,
+      text: 'Graphique des Précipitations Moyennes Mensuelles',
+      style: {
+        fontSize: 25,
+        fontWeight: 'bold',
+        fill: '#222',
+      },
     },
   };
   const conicColors = {
@@ -339,6 +329,8 @@ const DashboardCommercial = () => {
       ),
     },
   ];
+  
+  
 
   return (
     <div className="DashboardCommercial">
@@ -358,7 +350,7 @@ const DashboardCommercial = () => {
             />
           }
           title={"Float "}
-          value={commercial.solde ? commercial.solde + "." : 0}
+          value={data.commercial.solde ? data.commercial.solde + "." : 0}
         />
         <DashboardCard
           icon={
@@ -373,7 +365,7 @@ const DashboardCommercial = () => {
             />
           }
           title={"Creances"}
-          value={commercial.creances ? commercial.creances + "." : 0}
+          value={data.commercial.creances ?data.commercial.creances + "." : 0}
         />
         <DashboardCard
           icon={
@@ -388,7 +380,7 @@ const DashboardCommercial = () => {
             />
           }
           title={"Espèces"}
-          value={commercial.especeEnCours ? commercial.especeEnCours + "." : 0}
+          value={data.commercial.especeEnCours ? data.commercial.especeEnCours + "." : 0}
         />
         <DashboardCard
           icon={
@@ -403,7 +395,7 @@ const DashboardCommercial = () => {
             />
           }
           title={"Float Poussé"}
-          value={stat.montantRecharge ? stat.montantRecharge + "." : 0}
+          value={data.stat.montantRecharge ? data.stat.montantRecharge + "." : 0}
         />
         <DashboardCard
           icon={
@@ -418,7 +410,7 @@ const DashboardCommercial = () => {
             />
           }
           title={"Float Recu"}
-          value={stat.montantRechargeRecu ? stat.montantRechargeRecu + "." : 0}
+          value={data.stat.montantRechargeRecu ? data.stat.montantRechargeRecu + "." : 0}
         />
         <DashboardCard
           icon={
@@ -433,7 +425,7 @@ const DashboardCommercial = () => {
             />
           }
           title={"Retour Float"}
-          value={stat.montantRetourUV ? stat.montantRetourUV + "." : 0}
+          value={data.stat.montantRetourUV ? data.stat.montantRetourUV + "." : 0}
         />
       </Space>
       <Divider dashed />
@@ -451,7 +443,7 @@ const DashboardCommercial = () => {
             />
           }
           title={"Nombre Float Poussé"}
-          value={stat.nombreRecharge ? stat.nombreRecharge + "." : 0}
+          value={data.stat.nombreRecharge ? data.stat.nombreRecharge + "." : 0}
         />
         <DashboardCard
           icon={
@@ -466,7 +458,7 @@ const DashboardCommercial = () => {
             />
           }
           title={"Nombre Float recu"}
-          value={stat.nombreRechargeRecu ? stat.nombreRechargeRecu + "." : 0}
+          value={data.stat.nombreRechargeRecu ? data.stat.nombreRechargeRecu + "." : 0}
         />
 
         <DashboardCard
@@ -482,7 +474,7 @@ const DashboardCommercial = () => {
             />
           }
           title={"Nombre de Pdvs"}
-          value={pdvs.length ? pdvs.length + "." : 0}
+          value={data.pdvs.length ? data.pdvs.length + "." : 0}
         />
       </Space>
 
@@ -494,13 +486,13 @@ const DashboardCommercial = () => {
         <p style={{ margin: 25, marginLeft: 50, display: "flex" }}>
           <Statistic
             title={
-              "Objectif " + commercial.objactifDate
-                ? "Objectif " + commercial.objactifDate
+              "Objectif " + data.commercial.objactifDate
+                ? "Objectif " + data.commercial.objactifDate
                 : 0
             }
             value={
-              commercial.objectifMontant
-                ? commercial.objectifMontant+ " XOF"
+              data.commercial.objectifMontant
+                ? data.commercial.objectifMontant+ " XOF"
                 : 0 + " XOF"
             }
             prefix={<CalendarOutlined />}
@@ -511,10 +503,10 @@ const DashboardCommercial = () => {
           <Statistic
             title="Date & Heure du dernier rechargement"
             value={
-              commercial.dateDerniereRechargement
-                ? commercial.dateDerniereRechargement +
+              data.commercial.dateDerniereRechargement
+                ? data.commercial.dateDerniereRechargement +
                   " " +
-                  commercial.heureDerniereRechargement
+                  data.commercial.heureDerniereRechargement
                 : 0
             }
             prefix={<CalendarOutlined />}
@@ -526,9 +518,9 @@ const DashboardCommercial = () => {
       </Divider>
       <Space direction="vertical">
         <Table
-          loading={loading}
+          loading={loading.main}
           columns={columns}
-          dataSource={transaction}
+          dataSource={data.transaction}
         ></Table>
       </Space>
 
@@ -536,9 +528,11 @@ const DashboardCommercial = () => {
         Performances
       </Divider>
       <Space>
-        <Column {...configg} />
+        
+        {loading.graph ? <Spin style={{marginLeft:100}} className="custom-spin" /> : <Column {...configg} />}
+        
       </Space>
-      <Divider orientation="left" dashed>
+      <Divider orientation="left" dashed >
         Calendrier
       </Divider>
       <Space>

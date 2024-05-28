@@ -37,17 +37,11 @@ const RecouvrementSousAdv = () => {
 
   if (loading) {
     return (
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100vh",
-          paddingLeft: "540px",
-        }}
-      >
-        <Spin size="large" />
-      </div>
+      
+        <Spin size="large" className="custom-spin2"  >
+            
+        </Spin>
+     
     );
   }
   return (
@@ -74,7 +68,6 @@ const RecouvrementSousAdv = () => {
                   <span className="espace">Creances :{item.creances}</span>
                   <span className="espace">
                     <Button
-                      type="primary"
                       shape="circle"
                       onClick={() => handleViewDetail(item.contactSim)}
                       icon={<MoneyCollectOutlined />}

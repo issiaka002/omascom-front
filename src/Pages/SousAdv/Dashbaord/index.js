@@ -537,7 +537,7 @@ const DashbaordSousAdv = () => {
         Les 5 dernieres transactions
       </Divider>
       <Space direction="vertical">
-        <Table
+        <Table className="tbl_transaction2"
           loading={loading}
           columns={columns}
           dataSource={transaction}
@@ -728,7 +728,7 @@ const DashbaordSousAdv = () => {
         Les 5 dernieres transactions
       </Divider>
       <Space direction="vertical">
-        <Table
+        <Table className="tbl_transaction2"
           loading={loadingCom}
           columns={columns}
           dataSource={lastTransactionCom}
@@ -894,7 +894,7 @@ const DashbaordSousAdv = () => {
         Les 5 dernieres transactions
       </Divider>
       <Space direction="vertical">
-        <Table
+        <Table className="tbl_transaction2"
           loading={loadingPdv}
           columns={columns}
           dataSource={transactionPdv}
@@ -921,7 +921,9 @@ const DashbaordSousAdv = () => {
 
 function DashboardCard({ title, value, icon }) {
   return (
-    <Card style={{ padding: 0, margin: 0 }}>
+    <Card style={{ padding: 0, margin: 0 }}
+    hoverable
+    >
       <Space direction="horizontal">
         {icon}
         <Statistic

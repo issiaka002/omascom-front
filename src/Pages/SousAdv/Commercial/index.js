@@ -131,7 +131,7 @@ const SousAdvCommercialListe = () => {
         Ajouter un commercial
       </Button>
       <Divider></Divider>
-      <Table
+      <Table className="tbl_transaction2"
         loading={loading}
         columns={[
           {

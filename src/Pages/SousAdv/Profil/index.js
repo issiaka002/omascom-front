@@ -36,8 +36,10 @@ const ProfilSousADv = () => {
   }, []);
 
   if (loading) {
-    return  <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', paddingLeft:'550px' }}>
-              <Spin size="large" />
+    return  <div >
+              <Spin size="large" className="custom-spin2"  >
+                
+              </Spin>
             </div>
   }
 

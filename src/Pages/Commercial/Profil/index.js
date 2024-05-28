@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./profil.css";
-import { Button, Descriptions, Divider } from "antd";
+import { Button, Descriptions, Divider, Spin } from "antd";
 import { connexionService } from "../../../_services/connexion.service";
 import { EditOutlined } from "@ant-design/icons";
 import { commercialService } from "../../../_services/commercial.service";
@@ -8,6 +8,7 @@ import { commercialService } from "../../../_services/commercial.service";
 const ProfilCommercial = () => {
   const [commercial, setCommercial] = useState([]);
   const [sousadv, setSousadv] = useState([]);
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     connexionService
@@ -20,6 +21,7 @@ const ProfilCommercial = () => {
             .getMySousAdv(res.data.contactSim)
             .then((resp) => {
               setSousadv(resp.data.Reponse);
+              setLoading(false)
             })
             .catch((error) => {
               console.error("Erreur :", error);
@@ -30,6 +32,13 @@ const ProfilCommercial = () => {
         console.error("Erreur :", error);
       });
   }, []);
+
+  if (loading) {
+    return (
+        <Spin size="large" className="custom-spin" />
+    );
+  }
+
   return (
     <div>
       <h2>Profil </h2>
@@ -45,7 +54,7 @@ const ProfilCommercial = () => {
           <Button icon={<EditOutlined />}></Button>
         </div>
 
-        <Divider orientation="left">Mes Information</Divider>
+        <Divider orientation="left">Mes Information</Divider> 
 
         <Descriptions
           contentStyle={{ fontWeight: "semi-bold", fontSize: 15 }}

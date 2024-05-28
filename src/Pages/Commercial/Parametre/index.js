@@ -1,9 +1,12 @@
+import { Divider } from 'antd';
 import React from 'react';
+
 
 const ParametreCommercial = () => {
     return (
         <div>
-            <h1>Parametre</h1>
+            <h2>Parametre</h2>
+            <Divider/>
         </div>
     );
 };

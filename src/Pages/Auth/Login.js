@@ -58,6 +58,7 @@ const Login = () => {
         })
         .catch(err => {
             setMsg("Email ou mot de passe incorrect !!")
+            setLoadings(false)
             console.error(err);
         });
 };

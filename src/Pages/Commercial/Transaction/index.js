@@ -8,7 +8,7 @@ import {
   IssuesCloseOutlined,
   SearchOutlined,
 } from "@ant-design/icons";
-import { Form, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Highlighter from "react-highlight-words";
 const { RangePicker } = DatePicker;
 
@@ -251,8 +251,9 @@ const TransactionCommercial = () => {
 
   return (
     <div>
+      <h2 style={{ marginBottom: 10 }}>Transactions</h2>
       <Space size={20} direction="vertical">
-        <h2 style={{ marginBottom: 10 }}>Transactions</h2>
+        
         <Button style={btnStyle} size="small" onClick={switcher}>
           faire une transaction
         </Button>

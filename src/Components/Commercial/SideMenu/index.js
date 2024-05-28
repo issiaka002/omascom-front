@@ -4,7 +4,8 @@ import {
   UsergroupAddOutlined,
   FormOutlined,
   MenuFoldOutlined,RiseOutlined,MoneyCollectOutlined,
-  MenuUnfoldOutlined,PlusOutlined,UserSwitchOutlined,PoweroffOutlined
+  MenuUnfoldOutlined,PlusOutlined,UserSwitchOutlined,PoweroffOutlined,
+  SettingOutlined
 } from "@ant-design/icons";
 import { Menu, Button } from "antd";
 import { useEffect, useState } from "react";
@@ -86,6 +87,7 @@ function SideMenu() {
             icon: <HeatMapOutlined />,
           },
           {label:"Profil",key:"/commercial/compte", icon: <UserSwitchOutlined /> },
+          {label:"Parametre",key:"/commercial/parametre", icon: <SettingOutlined/> },
           {label:"Deconnexion",key:"logout", icon: <PoweroffOutlined/>, danger: true}, 
         ]}
       ></Menu>

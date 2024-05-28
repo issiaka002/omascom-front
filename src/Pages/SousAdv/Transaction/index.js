@@ -268,7 +268,7 @@ const { RangePicker } = DatePicker;
             }
           }}
         />
-          <Table
+          <Table className="tbl_transaction2"
             loading={loading}
             columns={columns}
             dataSource={transaction}
