@@ -29,7 +29,7 @@ function HeaderSousAdv() {
       .then(resp=>{
           commercialService.getNotification(resp.data.contactSim,lastWeekDay,dateFormatted)
             .then(res=>{
-                console.log("Notification : "+res.data.Reponse);
+                //console.log("Notification : "+res.data.Reponse);
                 setNotification(res.data.Reponse)
             }).catch(err=>console.error(err));
       }).catch(err=>console.error(err));

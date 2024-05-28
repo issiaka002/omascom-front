@@ -29,10 +29,15 @@ let updatePdv = (contactPdv, pdvRequest)=>{
     return http.Client.put("/pdv/updatePdv/"+contactPdv, pdvRequest)
 }
 
+let getPosition = (contactPdv)=>{
+    return http.Client.get("/coordonneesgps/gpsposition/"+contactPdv)
+}
+
 
 
 export const pdvService = {
     updatePdv,
+    getPosition,
     updateCommercialPdv,
     deletePdv,
     getPdvByContactPerso,

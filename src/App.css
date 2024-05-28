@@ -87,14 +87,14 @@ body{
     font-weight: 600;
 }
 
-.AddPdv{
+.AddPdv, .AddTransactionSousAdv{
     margin:20px 250px ;
     width: 60%;
     
 }
-.AddPdv h2{
+.AddPdv h2, .AddTransactionSousAdv h2{
     margin-bottom: 20px;
 }
-.AddPdv input{
+.AddPdv input, .AddTransactionSousAdv input{
     border: none;
 }

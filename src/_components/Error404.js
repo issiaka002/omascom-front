@@ -8,7 +8,7 @@ const Error404 = () => {
                 status="403"
                 title="403"
                 subTitle="Desolé, Page non trouvé."
-                extra={<Button type="primary">Retour</Button>}
+                extra={<Button type="primary">Home</Button>}
             />
         </div>
     );

@@ -10,7 +10,7 @@ const LayoutCommercial = () => {
         <div className='App'>
             <AppHeader />
             <div className="SideMenuAndPageContent">
-                <SideMenu></SideMenu>
+                <SideMenu/>
                 <div className='Container'>
                     <Outlet/>
                 </div>

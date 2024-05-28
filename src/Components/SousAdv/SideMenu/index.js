@@ -4,7 +4,9 @@ import {
     ShopOutlined,RiseOutlined,BankOutlined,AlignLeftOutlined,
     UserSwitchOutlined,PoweroffOutlined,
    PlusOutlined,FormOutlined,MenuUnfoldOutlined,MenuFoldOutlined,
-   UsergroupAddOutlined
+   UsergroupAddOutlined,
+   RetweetOutlined,
+   MoneyCollectOutlined
   } from "@ant-design/icons";
   import { Menu, Button } from "antd";
   import { useEffect, useState } from "react";
@@ -58,17 +60,17 @@ const SideMenuSousAdv = () => {
             key: "/sousadv/dashbaord",
           },
           {
-            label: "Sous adv",
-            key: "/sousadv/sousadv",
-            icon: <ShopOutlined />,
-          },
-          {
             label: "Transaction",
             key: "/sousadv/transaction",
             icon: <RiseOutlined />,
           },
           {
-            label: "commercial",
+            label: "Recouvrement",
+            key: "/sousadv/recouvrement",
+            icon: <MoneyCollectOutlined />,
+          },
+          {
+            label: "commerciaux",
             key: "/sousadv/commercial",
             icon: <BankOutlined />,
             children:[
@@ -90,7 +92,7 @@ const SideMenuSousAdv = () => {
             icon: <UsergroupAddOutlined />,
             children:[
                 {
-                label: 'commercial',
+                label: 'pdvs',
                 key: '/sousadv/pdv/liste',
                 icon: <FormOutlined />
                 },
@@ -101,7 +103,11 @@ const SideMenuSousAdv = () => {
                 }  
             ]
           },
+          {label:"Parcours",key:"/sousadv/parcours", icon: <RetweetOutlined/> },
+        
           {label:"Profil",key:"/sousadv/compte", icon: <UserSwitchOutlined /> },
+          {label:"Parametre",key:"/sousadv/parametre", icon: <RetweetOutlined/> },
+
           {label:"Deconnexion",key:"logout", icon: <PoweroffOutlined/>, danger: true},
         ]}
       ></Menu>

@@ -28,14 +28,26 @@ let getStat=(contactSim, date1 ,date2)=>{
     return http.Client.get("/stats/statsTransaction/"+contactSim+"/"+date1+"/"+date2)
 }
 
-let testStat=()=>{
-    return http.Client.get("http://localhost:8081/api/v1/stats/statsTransaction/6996306039/2024-05-01/2024-05-03")
+let getTrasanctionByDate = (contactSim,date)=>{
+    return http.Client.get("/transaction/byDate/"+contactSim+"/"+date)
+}
+
+let getTrasanctionByDateBetweenIntervenant = (contactSim,startDate,endDate)=>{
+    return http.Client.get("/transaction/byDateBetweenByIntervenant/"+contactSim+"/"+startDate+"/"+endDate)
 }
 
 
 
+
 export const TransactionService = {
-    getTransactionByIntervenant,getByIntervenantGroupByType,getInfoTransaction,getStat,testStat,
-    getTransactionByReference,get10lastTransaction,getByIntervenantByTypeByDate
+    getTransactionByIntervenant,
+    getByIntervenantGroupByType,
+    getTrasanctionByDateBetweenIntervenant,
+    getInfoTransaction,
+    getStat,
+    getTransactionByReference,
+    get10lastTransaction,
+    getByIntervenantByTypeByDate,
+    getTrasanctionByDate
 }
 

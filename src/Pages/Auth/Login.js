@@ -3,6 +3,8 @@ import { Alert, Button, Checkbox, Form, Grid, Input, theme, Typography } from "a
 import { LockOutlined, MailOutlined } from "@ant-design/icons";
 import { connexionService } from "../../_services/connexion.service";
 import { useNavigate } from "react-router-dom";
+import { color } from "chart.js/helpers";
+import { hover } from "@testing-library/user-event/dist/hover";
 
 const { useToken } = theme;
 const { useBreakpoint } = Grid;
@@ -12,6 +14,14 @@ const Login = () => {
   const { token } = useToken();
   const screens = useBreakpoint();
   const navigate = useNavigate();
+  const [loadings, setLoadings] = useState(false)
+
+  
+  const btnConnectStyle={
+    backgroundColor:'orange',
+    border:'none',
+    borderRaduis:0
+  }
 
   const [msg, setMsg] = useState("");
 
@@ -21,6 +31,7 @@ const Login = () => {
 
   const onSubmit = (values) => {
     connexionService.logout(); // Pour des tests
+    setLoadings(true)
     connexionService.connexion(values)
         .then(res => {
             connexionService.saveToken(res.data.bearer);
@@ -29,12 +40,15 @@ const Login = () => {
         .then(data => {
             switch (data.data.role) {
                 case "ADV":
+                    setLoadings(false)
                     navigate("/adv");
                     break;
                 case "COMMERCIAL":
+                    setLoadings(false)
                     navigate("/commercial");
                     break;
                 case "SOUSADV":
+                    setLoadings(false)
                     navigate("/sousadv");
                     break;
                 default:
@@ -77,7 +91,12 @@ const Login = () => {
       color: token.colorTextSecondary
     },
     title: {
-      fontSize: screens.md ? token.fontSizeHeading2 : token.fontSizeHeading3
+      fontSize: screens.md ? token.fontSizeHeading2 : token.fontSizeHeading3,
+      fontWeight:700,
+      color:'#222'
+    },
+    input:{
+      border:'0px orange',
     }
   };
 
@@ -92,7 +111,7 @@ const Login = () => {
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
           >
-            <rect x="0.464294" width="24" height="24" rx="4.8" fill="#1890FF" />
+            <rect x="0.464294" width="24" height="24" rx="4.8" fill="orange" />
             <path
               d="M14.8643 3.6001H20.8643V9.6001H14.8643V3.6001Z"
               fill="white"
@@ -121,9 +140,10 @@ const Login = () => {
           requiredMark="optional"
           
         >
-          <Alert message={msg} showIcon/> <br />
+          <Alert style={{backgroundColor:'white', border:'none', color:'orange', fontStyle:'italic', fontWeight:600}} message={msg} /> <br />
           <Form.Item
             name="email"
+            style={styles.input}
             rules={[
               {
                 type: "email",
@@ -139,6 +159,7 @@ const Login = () => {
           </Form.Item>
           <Form.Item
             name="password"
+            style={styles.input}
             rules={[
               {
                 required: true,
@@ -159,7 +180,7 @@ const Login = () => {
             
           </Form.Item>
           <Form.Item style={{ marginBottom: "0px" }}>
-            <Button block="true" type="primary" htmlType="submit">
+            <Button loading={loadings} style={btnConnectStyle} block="true" type="primary" htmlType="submit">
               Connexion
             </Button>
             
