@@ -26,10 +26,13 @@ import {
   Input,
   Row,
   Space,
+  Spin,
   Statistic,
   Table,
   Tag,
 } from "antd";
+import { TransactionService } from "../../../_services/transaction.service";
+import { Column } from "@ant-design/charts";
 
 const DetailCommercial = () => {
   const params = useParams();
@@ -40,6 +43,8 @@ const DetailCommercial = () => {
   const [transaction, setTransaction] = useState([]);
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
+
+  const [statGrap, setStatGrap] = useState([]);
 
   const handleViewDetailPdv = (contactSim) => {
     navigate("/sousadv/pdv/detail/" + contactSim);
@@ -52,6 +57,21 @@ const DetailCommercial = () => {
   const voirIteneraire = (contact) =>{
     navigate("/sousadv/parcours/" + contact);
   }
+
+  const formatDate = (date) => {
+    const annee = date.getFullYear();
+    const mois = ("0" + (date.getMonth() + 1)).slice(-2);
+    const jour = ("0" + date.getDate()).slice(-2);
+    return `${annee}-${mois}-${jour}`;
+  };
+
+  const today = new Date();
+  const dateFormatted = formatDate(today);
+
+  const lastWeek = new Date();
+  lastWeek.setDate(lastWeek.getDate() - 7);
+  const lastWeekDay = formatDate(lastWeek);
+
 
   useEffect(() => {
     commercialService
@@ -66,6 +86,7 @@ const DetailCommercial = () => {
 
   const [loadingpdv, setLoadingpdv] = useState(true);
   const [pdvs, setPdvs] = useState([]);
+  const [statTransaction, setStatTransaction] = useState([]);
 
   const getColumnSearchProps = (dataIndex) => ({
     filterDropdown: ({
@@ -253,9 +274,44 @@ const DetailCommercial = () => {
     padding:0
   };
 
+  const config = {
+    data: statGrap,
+    yField: "montant",
+    colorField: "nom",
+    group: true,
+    style: {
+      inset: 10,
+    },
+    legend: {
+      position: 'top-left',  // Change the position of the legend
+      layout: 'horizontal',  // Layout of the legend, can be 'horizontal' or 'vertical'
+    },
+    title: {
+      visible: true,
+      text: 'Graphique des Précipitations Moyennes Mensuelles',
+      style: {
+        fontSize: 25,
+        fontWeight: 'bold',
+        fill: '#222',
+      },
+    },
+  };
+
   useEffect(() => {
     connexionService.howIsLogIn().then((res) => {
       if (res.data.role === "SOUSADV") {
+        TransactionService.getInfoTransaction(params.contact, dateFormatted)
+          .then(resps=>{
+            setStatTransaction(resps.data)
+          }).catch((error) => {
+            console.error("Erreur :", error);
+          });
+          TransactionService.getStat(params.contact, lastWeekDay, dateFormatted)
+            .then(ress=>{
+              
+              setStatGrap(ress.data.Reponse)
+              
+            })
         commercialService
           .getPdvsCommercial(params.contact)
           .then((res2) => {
@@ -339,7 +395,7 @@ const DetailCommercial = () => {
             <Statistic
               style={statStyle}
               title="Float Recu"
-              value={0.0}
+              value={statTransaction.montantRechargeRecu?statTransaction.montantRechargeRecu+ "." :0}
               precision={1}
               prefix={<DollarCircleOutlined />}
               suffix=""
@@ -351,7 +407,7 @@ const DetailCommercial = () => {
             <Statistic
               style={statStyle}
               title="Float poussé"
-              value={11.28}
+              value={statTransaction.montantRecharge?statTransaction.montantRecharge+ "." :0}
               prefix={<ArrowUpOutlined />}
               suffix=""
             />
@@ -380,7 +436,7 @@ const DetailCommercial = () => {
               style={statStyle}
               title="Retour float"
               value={
-                commercial.retourUv ? commercial.retourUv + "." : 0.0
+                statTransaction.montantRetourUV?statTransaction.montantRetourUV+ "." :0
               }
               precision={1}
               prefix={<ArrowDownOutlined />}
@@ -417,7 +473,7 @@ const DetailCommercial = () => {
           {commercial.secteur}
         </Descriptions.Item>
         <Descriptions.Item label="Zone ">{commercial.zone}</Descriptions.Item>
-        <Descriptions.Item label="Poste">SOUS ADV</Descriptions.Item>
+        <Descriptions.Item label="Poste">COMMERCIAL</Descriptions.Item>
       </Descriptions>
 
       <Divider orientation="left">Info CNI</Divider>
@@ -583,7 +639,12 @@ const DetailCommercial = () => {
         dataSource={pdvs}
         pagination={{ pageSize: 5 }}
       />
-
+      <Divider orientation="left">Performances</Divider>
+      <Space>
+        
+        {loading.graph ? <Spin style={{marginLeft:100}} className="custom-spin" /> : <Column {...config} />}
+        
+      </Space>
       <Divider orientation="left">Parcours</Divider>
       <div>
         <Space size={20} direction="vertical">

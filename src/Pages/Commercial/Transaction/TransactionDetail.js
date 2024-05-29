@@ -23,19 +23,7 @@ const TransactionDetail = () => {
 
   if (loading) {
     return (
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100vh",
-          paddingLeft: "500px",
-        }}
-      >
-        <Spin size="large" >
-            Detail de la transaction
-        </Spin>
-      </div>
+      <Spin size="large" className="custom-spin"/>
     );
   }
 

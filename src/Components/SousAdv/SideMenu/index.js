@@ -75,7 +75,7 @@ const SideMenuSousAdv = () => {
             icon: <BankOutlined />,
             children:[
                 {
-                label: 'commercial',
+                label: 'commerciaux',
                 key: '/sousadv/commercial/liste',
                 icon: <FormOutlined />
                 },

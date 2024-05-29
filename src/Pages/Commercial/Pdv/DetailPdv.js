@@ -309,13 +309,13 @@ const DetailPdv = () => {
           {pdvs.piece ? pdvs.piece.lieu : "..."}
         </Descriptions.Item>
       </Descriptions>
-      </div>: <Spin/>}
+      </div>: <Spin className="custom-spin"/>}
       <Divider orientation="left">
         Historique des transactions effectuées
       </Divider>
       <div>
         <Space size={20} direction="vertical">
-          <Table
+          <Table className="tbl_transaction"
             loading={loading}
             columns={columns}
             dataSource={transaction}

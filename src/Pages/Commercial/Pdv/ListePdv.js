@@ -135,7 +135,7 @@ const ListePdv = () => {
           Ajouter un pdv
         </Button>
         <Divider></Divider>
-        <Table
+        <Table className="tbl_transaction"
           loading={loading}
           columns={[
             {

@@ -275,7 +275,7 @@ const TransactionCommercial = () => {
             }
           }}
         />
-        <Table
+        <Table className="tbl_transaction"
           loading={loading}
           columns={columns}
           dataSource={transaction}

@@ -95,7 +95,7 @@ const DashboardCommercial = () => {
             pdvs: pdvsRes.data.Reponse,
           });
 
-          console.log(data)
+          console.log(infoTransactionRes.data)
 
           setLoading({
             main: false,
@@ -517,7 +517,7 @@ const DashboardCommercial = () => {
         Les 5 dernieres transactions
       </Divider>
       <Space direction="vertical">
-        <Table
+        <Table className="tbl_transaction"
           loading={loading.main}
           columns={columns}
           dataSource={data.transaction}

@@ -49,7 +49,7 @@ const Recouvrement = () => {
 
   return (
     <div className="Recouvrement">
-      <h2 style={{ marginBottom: 25 }}>Liste des recouvrement à effectués</h2>
+      <h2 style={{ marginBottom: 25 }}>Recouvrement à effectués</h2>
       <List
         itemLayout="horizontal"
         dataSource={pdvs}
@@ -71,7 +71,7 @@ const Recouvrement = () => {
                   <span className="espace">Creances :{item.creances}</span>
                   <span className="espace">
                     <Button
-                      style={{backgroundColor:'orange'}}
+                      style={{backgroundColor:'orange', color:'white'}}
                       shape="circle"
                       onClick={() => handleViewDetail(item.contactSim)}
                       icon={<MoneyCollectOutlined />}

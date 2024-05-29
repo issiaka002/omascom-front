@@ -46,7 +46,7 @@ const RecouvrementSousAdv = () => {
   }
   return (
     <div className="RecourvrementSousAdv">
-      <h2 style={{ marginBottom: 25 }}>Liste des recouvrement à effectués</h2>
+      <h2 style={{ marginBottom: 25 }}>Recouvrement à effectués</h2>
       <List
         itemLayout="horizontal"
         dataSource={commercial}
