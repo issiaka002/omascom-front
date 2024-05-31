@@ -87,6 +87,7 @@ const DashbaordSousAdv = () => {
           sousadvService
             .getTrasanctionWithCommerciaux(res.data.contactSim)
             .then((resps) => {
+              console.log(resps);
               setLoadingCom(true);
               setlastTransactionCom(resps.data.Reponse);
               setLoadingCom(false);
@@ -94,11 +95,11 @@ const DashbaordSousAdv = () => {
             .catch((err) => console.log("Erreur " + err));
 
           sousadvService
-          .getStatistiquePdv(res.data.contactSim,todayFormatted)
-          .then((respp) => {
-            setLastTransactionPdvInfo(respp.data.Reponse);
-          })
-          .catch((err) => console.log("Erreur " + err));
+            .getStatistiquePdv(res.data.contactSim, todayFormatted)
+            .then((respp) => {
+              setLastTransactionPdvInfo(respp.data.Reponse);
+            })
+            .catch((err) => console.log("Erreur " + err));
 
           sousadvService
             .getTrasanctionWithPdvs(res.data.contactSim)
@@ -122,7 +123,7 @@ const DashbaordSousAdv = () => {
         if (res.data.role === "SOUSADV") {
           TransactionService.getInfoTransaction(
             res.data.contactSim,
-            todayFormatted
+            todayFormatted,
           )
             .then((respd) => {
               setStat(respd.data);
@@ -139,7 +140,7 @@ const DashbaordSousAdv = () => {
           TransactionService.getStat(
             res.data.contactSim,
             lastWeekDay,
-            todayFormatted
+            todayFormatted,
           )
             .then((res) => {
               // Graphique data
@@ -264,7 +265,7 @@ const DashbaordSousAdv = () => {
         if (typeTransaction === "RECHARGEMENT") {
           color = "yellow";
         } else if (typeTransaction === "RECOUVREMENT") {
-          color = "blue";
+          color = "orange";
         } else if (typeTransaction === "RETOUR_UV") {
           color = "red";
         }
@@ -312,6 +313,10 @@ const DashbaordSousAdv = () => {
           text: "CREDIT",
           value: "CREDIT",
         },
+        {
+          text: "RETOUR_UV",
+          value: "RETOUR_UV",
+        },
       ],
       onFilter: (value, record) => record.rechargeType.startsWith(value),
       filterSearch: true,
@@ -324,6 +329,8 @@ const DashbaordSousAdv = () => {
           color = "volcano";
         } else if (rechargeType === "CREDIT") {
           color = "red";
+        } else if (rechargeType === "RETOUR_UV") {
+          color = "orange";
         }
         return <Tag color={color}>{rechargeType}</Tag>;
       },
@@ -537,7 +544,8 @@ const DashbaordSousAdv = () => {
         Les 5 dernieres transactions
       </Divider>
       <Space direction="vertical">
-        <Table className="tbl_transaction2"
+        <Table
+          className="tbl_transaction2"
           loading={loading}
           columns={columns}
           dataSource={transaction}
@@ -728,7 +736,8 @@ const DashbaordSousAdv = () => {
         Les 5 dernieres transactions
       </Divider>
       <Space direction="vertical">
-        <Table className="tbl_transaction2"
+        <Table
+          className="tbl_transaction2"
           loading={loadingCom}
           columns={columns}
           dataSource={lastTransactionCom}
@@ -753,7 +762,11 @@ const DashbaordSousAdv = () => {
             />
           }
           title={"Cumul Creances"}
-          value={transactionPdvInfo.cumulCreances ? transactionPdvInfo.cumulCreances + "." : 0}
+          value={
+            transactionPdvInfo.cumulCreances
+              ? transactionPdvInfo.cumulCreances + "."
+              : 0
+          }
         />
 
         <DashboardCard
@@ -769,7 +782,11 @@ const DashbaordSousAdv = () => {
             />
           }
           title={"Cumul Float Recu"}
-          value={transactionPdvInfo.cumulFloatRecu ? transactionPdvInfo.cumulFloatRecu + "." : 0}
+          value={
+            transactionPdvInfo.cumulFloatRecu
+              ? transactionPdvInfo.cumulFloatRecu + "."
+              : 0
+          }
         />
 
         <DashboardCard
@@ -785,7 +802,11 @@ const DashbaordSousAdv = () => {
             />
           }
           title={"Cumul Float Poussé"}
-          value={transactionPdvInfo.cumulFloatPousse ? transactionPdvInfo.cumulFloatPousse + "." : 0}
+          value={
+            transactionPdvInfo.cumulFloatPousse
+              ? transactionPdvInfo.cumulFloatPousse + "."
+              : 0
+          }
         />
 
         <DashboardCard
@@ -801,7 +822,11 @@ const DashbaordSousAdv = () => {
             />
           }
           title={"Cumul Retour Float"}
-          value={transactionPdvInfo.cumulRetourFloat ? transactionPdvInfo.cumulRetourFloat + "." : 0}
+          value={
+            transactionPdvInfo.cumulRetourFloat
+              ? transactionPdvInfo.cumulRetourFloat + "."
+              : 0
+          }
         />
       </Space>
       <Divider />
@@ -819,7 +844,11 @@ const DashbaordSousAdv = () => {
             />
           }
           title={"Nombre Float poussé"}
-          value={transactionPdvInfo.nombreFloatPousse ? transactionPdvInfo.nombreFloatPousse + "." : 0}
+          value={
+            transactionPdvInfo.nombreFloatPousse
+              ? transactionPdvInfo.nombreFloatPousse + "."
+              : 0
+          }
         />
         <DashboardCard
           icon={
@@ -834,7 +863,11 @@ const DashbaordSousAdv = () => {
             />
           }
           title={"Nombre Float recu"}
-          value={transactionPdvInfo.nombreFloatRecu ? transactionPdvInfo.nombreFloatRecu + "." : 0}
+          value={
+            transactionPdvInfo.nombreFloatRecu
+              ? transactionPdvInfo.nombreFloatRecu + "."
+              : 0
+          }
         />
 
         <DashboardCard
@@ -850,7 +883,11 @@ const DashbaordSousAdv = () => {
             />
           }
           title={"Nombre Retour float"}
-          value={transactionPdvInfo.nombreRetourFloat ? transactionPdvInfo.nombreRetourFloat + "." : 0}
+          value={
+            transactionPdvInfo.nombreRetourFloat
+              ? transactionPdvInfo.nombreRetourFloat + "."
+              : 0
+          }
         />
 
         <DashboardCard
@@ -866,7 +903,11 @@ const DashbaordSousAdv = () => {
             />
           }
           title={"Nombre de pdvs Total"}
-          value={transactionPdvInfo.nombrePdvTotal ? transactionPdvInfo.nombrePdvTotal + "." : 0}
+          value={
+            transactionPdvInfo.nombrePdvTotal
+              ? transactionPdvInfo.nombrePdvTotal + "."
+              : 0
+          }
         />
       </Space>
       <Divider dashed />
@@ -894,7 +935,8 @@ const DashbaordSousAdv = () => {
         Les 5 dernieres transactions
       </Divider>
       <Space direction="vertical">
-        <Table className="tbl_transaction2"
+        <Table
+          className="tbl_transaction2"
           loading={loadingPdv}
           columns={columns}
           dataSource={transactionPdv}
@@ -921,9 +963,7 @@ const DashbaordSousAdv = () => {
 
 function DashboardCard({ title, value, icon }) {
   return (
-    <Card style={{ padding: 0, margin: 0 }}
-    hoverable
-    >
+    <Card style={{ padding: 0, margin: 0 }} hoverable>
       <Space direction="horizontal">
         {icon}
         <Statistic

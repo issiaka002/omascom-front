@@ -68,7 +68,7 @@ const AddCommercial = () => {
       .catch((error) => {
         console.error(
           "Erreur lors de la récupération des informations de connexion:",
-          error
+          error,
         );
       });
   }, []);
@@ -111,7 +111,7 @@ const AddCommercial = () => {
         },
         function (error) {
           console.error("Erreur de géolocalisation :", error);
-        }
+        },
       );
     } else {
       // ajout du commercial

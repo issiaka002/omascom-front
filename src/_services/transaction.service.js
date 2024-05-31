@@ -36,12 +36,15 @@ let getTrasanctionByDateBetweenIntervenant = (contactSim,startDate,endDate)=>{
     return http.Client.get("/transaction/byDateBetweenByIntervenant/"+contactSim+"/"+startDate+"/"+endDate)
 }
 
-
+let getStatPerDate=(contactSim, date)=>{
+    return http.Client.get("/stats/statsperDate/"+contactSim+"/"+date)
+}
 
 
 export const TransactionService = {
     getTransactionByIntervenant,
     getByIntervenantGroupByType,
+    getStatPerDate,
     getTrasanctionByDateBetweenIntervenant,
     getInfoTransaction,
     getStat,

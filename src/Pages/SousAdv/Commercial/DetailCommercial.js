@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { commercialService } from "../../../_services/commercial.service";
 import { connexionService } from "../../../_services/connexion.service";
 import {
+  AreaChartOutlined,
   ArrowDownOutlined,
   ArrowUpOutlined,
   DeleteOutlined,
@@ -40,11 +41,16 @@ const DetailCommercial = () => {
   const navigate = useNavigate();
   //
   const [loading, setLoading] = useState(true);
+
   const [transaction, setTransaction] = useState([]);
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
 
   const [statGrap, setStatGrap] = useState([]);
+  const [loadinggraph, setLoadinggraph] = useState(true);
+
+  const [statGrap2, setStatGrap2] = useState([]);
+  const [loadinggraph2, setLoadinggraph2] = useState(true);
 
   const handleViewDetailPdv = (contactSim) => {
     navigate("/sousadv/pdv/detail/" + contactSim);
@@ -54,9 +60,9 @@ const DetailCommercial = () => {
     navigate("/sousadv/transaction/detail/" + reference);
   };
 
-  const voirIteneraire = (contact) =>{
+  const voirIteneraire = (contact) => {
     navigate("/sousadv/parcours/" + contact);
-  }
+  };
 
   const formatDate = (date) => {
     const annee = date.getFullYear();
@@ -71,7 +77,6 @@ const DetailCommercial = () => {
   const lastWeek = new Date();
   lastWeek.setDate(lastWeek.getDate() - 7);
   const lastWeekDay = formatDate(lastWeek);
-
 
   useEffect(() => {
     commercialService
@@ -271,7 +276,7 @@ const DetailCommercial = () => {
   const statStyle = {
     color: "#222",
     fontWeight: 500,
-    padding:0
+    padding: 0,
   };
 
   const config = {
@@ -283,47 +288,67 @@ const DetailCommercial = () => {
       inset: 10,
     },
     legend: {
-      position: 'top-left',  // Change the position of the legend
-      layout: 'horizontal',  // Layout of the legend, can be 'horizontal' or 'vertical'
+      position: "top-left", // Change the position of the legend
+      layout: "horizontal", // Layout of the legend, can be 'horizontal' or 'vertical'
     },
     title: {
       visible: true,
-      text: 'Graphique des Précipitations Moyennes Mensuelles',
+      text: "Graphique des Précipitations Moyennes Mensuelles",
       style: {
         fontSize: 25,
-        fontWeight: 'bold',
-        fill: '#222',
+        fontWeight: "bold",
+        fill: "#222",
       },
     },
   };
 
+  const config2 = {
+    data: statGrap2,
+    yField: "montant",
+    colorField: "nom",
+    group: true,
+    style: {
+      inset: 10,
+    },
+    legend: {
+      position: "top-left",
+      layout: "horizontal",
+    },
+  };
+
   useEffect(() => {
-    connexionService.howIsLogIn().then((res) => {
-      if (res.data.role === "SOUSADV") {
         TransactionService.getInfoTransaction(params.contact, dateFormatted)
-          .then(resps=>{
-            setStatTransaction(resps.data)
-          }).catch((error) => {
-            console.error("Erreur :", error);
-          });
-          TransactionService.getStat(params.contact, lastWeekDay, dateFormatted)
-            .then(ress=>{
-              
-              setStatGrap(ress.data.Reponse)
-              
-            })
-        commercialService
-          .getPdvsCommercial(params.contact)
-          .then((res2) => {
-            setPdvs(res2.data.Reponse);
-            console.log(res2.data.Reponse);
-            setLoadingpdv(false);
+          .then((resps) => {
+            setStatTransaction(resps.data);
           })
           .catch((error) => {
             console.error("Erreur :", error);
           });
-      }
-    });
+        TransactionService.getStat(params.contact, lastWeekDay, dateFormatted)
+          .then((ress) => {
+            setStatGrap(ress.data.Reponse);
+            setLoadinggraph(false);
+          })
+          .catch((error) => {
+            console.error("Erreur :", error);
+          });
+        TransactionService.getStatPerDate(params.contact, dateFormatted)
+          .then((ressp) => {
+            setStatGrap2(ressp.data.Reponse);
+            setLoadinggraph2(false);
+          })
+          .catch((error) => {
+            console.error("Erreur :", error);
+          });
+        commercialService
+          .getPdvsCommercial(params.contact)
+          .then((res2) => {
+            setPdvs(res2.data.Reponse);
+            setLoadingpdv(false);
+          })
+          .catch((error) => {
+            console.error("Erreur :", error);
+          });   
   }, []);
 
   useEffect(() => {
@@ -349,7 +374,10 @@ const DetailCommercial = () => {
 
   return (
     <div className="DetailCommercial">
-      <h2>Detail sur le Commercial #<span style={{color:'#800080'}}>{commercial.nom}</span></h2>
+      <h2>
+        Detail sur le Commercial #
+        <span style={{ color: "#800080" }}>{commercial.nom}</span>
+      </h2>
 
       <Divider></Divider>
 
@@ -366,7 +394,7 @@ const DetailCommercial = () => {
       <Divider></Divider>
       <Row gutter={7} wrap>
         <Col span={5}>
-          <Card bordered={false} style={{padding:0}}>
+          <Card bordered={false} style={{ padding: 0 }}>
             <Statistic
               style={statStyle}
               title="Float"
@@ -377,7 +405,7 @@ const DetailCommercial = () => {
             />
           </Card>
         </Col>
-        
+
         <Col span={5}>
           <Card bordered={false}>
             <Statistic
@@ -395,7 +423,11 @@ const DetailCommercial = () => {
             <Statistic
               style={statStyle}
               title="Float Recu"
-              value={statTransaction.montantRechargeRecu?statTransaction.montantRechargeRecu+ "." :0}
+              value={
+                statTransaction.montantRechargeRecu
+                  ? statTransaction.montantRechargeRecu + "."
+                  : 0
+              }
               precision={1}
               prefix={<DollarCircleOutlined />}
               suffix=""
@@ -407,7 +439,11 @@ const DetailCommercial = () => {
             <Statistic
               style={statStyle}
               title="Float poussé"
-              value={statTransaction.montantRecharge?statTransaction.montantRecharge+ "." :0}
+              value={
+                statTransaction.montantRecharge
+                  ? statTransaction.montantRecharge + "."
+                  : 0
+              }
               prefix={<ArrowUpOutlined />}
               suffix=""
             />
@@ -416,7 +452,7 @@ const DetailCommercial = () => {
       </Row>
       <Divider></Divider>
       <Row gutter={7} wrap>
-      <Col span={5}>
+        <Col span={5}>
           <Card bordered={false}>
             <Statistic
               style={statStyle}
@@ -436,7 +472,9 @@ const DetailCommercial = () => {
               style={statStyle}
               title="Retour float"
               value={
-                statTransaction.montantRetourUV?statTransaction.montantRetourUV+ "." :0
+                statTransaction.montantRetourUV
+                  ? statTransaction.montantRetourUV + "."
+                  : 0
               }
               precision={1}
               prefix={<ArrowDownOutlined />}
@@ -445,17 +483,16 @@ const DetailCommercial = () => {
           </Card>
         </Col>
         <Col span={4}>
-        <Card bordered={false}>
-        <Statistic
-            title="Nombre de Pdvs"
-            value={pdvs.length}
-            prefix={<ManOutlined />}
-        />
+          <Card bordered={false}>
+            <Statistic
+              title="Nombre de Pdvs"
+              value={pdvs.length}
+              prefix={<ManOutlined />}
+            />
           </Card>
-        
         </Col>
       </Row>
-     
+
       <Divider></Divider>
 
       <Descriptions
@@ -463,8 +500,12 @@ const DetailCommercial = () => {
         labelStyle={{ color: "#800080", fontWeight: "bold", fontSize: 16 }}
       >
         <Descriptions.Item label="Nom">{commercial.nom}</Descriptions.Item>
-        <Descriptions.Item label="Contact Marchant">{commercial.contactSim}</Descriptions.Item>
-        <Descriptions.Item label="Tel">{commercial.contactPerso}</Descriptions.Item>
+        <Descriptions.Item label="Contact Marchant">
+          {commercial.contactSim}
+        </Descriptions.Item>
+        <Descriptions.Item label="Tel">
+          {commercial.contactPerso}
+        </Descriptions.Item>
         <Descriptions.Item label="Localication">
           {commercial.situationGeo} {}
         </Descriptions.Item>
@@ -504,7 +545,8 @@ const DetailCommercial = () => {
       </Divider>
       <div>
         <Space size={20} direction="vertical">
-          <Table className="tbl_transaction2"
+          <Table
+            className="tbl_transaction2"
             loading={loading}
             columns={columns}
             dataSource={transaction}
@@ -514,8 +556,9 @@ const DetailCommercial = () => {
       </div>
 
       <Divider orientation="left">Point de ventes</Divider>
-      
-      <Table className="tbl_transaction2"
+
+      <Table
+        className="tbl_transaction2"
         loading={loadingpdv}
         size="small"
         columns={[
@@ -571,7 +614,7 @@ const DetailCommercial = () => {
             dataIndex: "situationGeo",
             ...getColumnSearchProps("situationGeo"),
           },
-          
+
           {
             title: "Tel",
             dataIndex: "contactPerco",
@@ -641,9 +684,31 @@ const DetailCommercial = () => {
       />
       <Divider orientation="left">Performances</Divider>
       <Space>
-        
-        {loading.graph ? <Spin style={{marginLeft:100}} className="custom-spin" /> : <Column {...config} />}
-        
+        <div
+          style={{ width: "530px", backgroundColor: "white", padding: "6px" }}
+        >
+          {loadinggraph2 ? (
+            <Spin className="custom-spin2" />
+          ) : (
+            <Column {...config2} />
+          )}
+          <p style={{ fontStyle: "italic", fontSize: "12px", color: "#222" }}>
+            <AreaChartOutlined /> Transactions aujourd'hui
+          </p>
+        </div>
+
+        <div
+          style={{ width: "530px", backgroundColor: "white", padding: "6px" }}
+        >
+          {loadinggraph ? (
+            <Spin className="custom-spin2" />
+          ) : (
+            <Column {...config} />
+          )}
+          <p style={{ fontStyle: "italic", fontSize: "12px", color: "#222" }}>
+            <AreaChartOutlined /> Transactions en 1 semaine
+          </p>
+        </div>
       </Space>
       <Divider orientation="left">Parcours</Divider>
       <div>
@@ -652,7 +717,9 @@ const DetailCommercial = () => {
             size="small"
             icon={<EyeOutlined />}
             onClick={() => voirIteneraire(commercial.contactSim)}
-          >Voir iteneraire</Button>
+          >
+            Voir iteneraire
+          </Button>
         </Space>
       </div>
     </div>

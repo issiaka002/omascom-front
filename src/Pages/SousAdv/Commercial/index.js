@@ -14,15 +14,14 @@ import Highlighter from "react-highlight-words";
 import { useNavigate } from "react-router-dom";
 
 const SousAdvCommercialListe = () => {
-
-    const navigate  = useNavigate();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [commerciaux, setCommerciaux] = useState([]);
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
 
   const handleViewDetailcommercial = (contactSim) => {
-    navigate("/sousadv/commercial/detail/"+contactSim)
+    navigate("/sousadv/commercial/detail/" + contactSim);
   };
 
   const switcher = () => {};
@@ -127,11 +126,12 @@ const SousAdvCommercialListe = () => {
     <div className="SousAdvCommercial">
       <h2>Commerciaux</h2>
 
+      <Divider></Divider>
       <Button style={btnStyle} size="small" onClick={switcher}>
         Ajouter un commercial
       </Button>
-      <Divider></Divider>
-      <Table className="tbl_transaction2"
+      <Table
+        className="tbl_transaction2"
         loading={loading}
         columns={[
           {
@@ -163,7 +163,7 @@ const SousAdvCommercialListe = () => {
           {
             title: "Zone",
             dataIndex: "zone",
-            width:'7%',
+            width: "7%",
             filters: [
               {
                 text: "AAP",
@@ -175,7 +175,7 @@ const SousAdvCommercialListe = () => {
               },
             ],
             onFilter: (value, record) => record.zone.startsWith(value),
-            width: "40%",
+            
             render: (zone) => {
               let color = "geekblue";
               if (zone === "MT") {

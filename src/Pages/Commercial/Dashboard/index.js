@@ -20,7 +20,6 @@ import { TransactionService } from "../../../_services/transaction.service";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 
-
 import {
   ShoppingCartOutlined,
   UserOutlined,
@@ -32,6 +31,7 @@ import {
   SlidersOutlined,
   SearchOutlined,
   IssuesCloseOutlined,
+  AreaChartOutlined,
 } from "@ant-design/icons";
 import Highlighter from "react-highlight-words";
 
@@ -47,10 +47,12 @@ const DashboardCommercial = () => {
     stat: [],
     transaction: [],
     statGrap: [],
+    statGrap2: [],
   });
   const [loading, setLoading] = useState({
     main: true,
     graph: true,
+    graph2: true,
   });
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
@@ -74,33 +76,13 @@ const DashboardCommercial = () => {
   };
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchUserRole = async () => {
       try {
         const res = await connexionService.howIsLogIn();
         if (res.data.role === "COMMERCIAL") {
           const contactSim = res.data.contactSim;
-          const [infoTransactionRes, lastTransactionRes, statRes, commercialRes, pdvsRes] = await Promise.all([
-            TransactionService.getInfoTransaction(contactSim, dateFormatted),
-            TransactionService.get10lastTransaction(contactSim),
-            TransactionService.getStat(contactSim, lastWeekDay, dateFormatted),
-            commercialService.getCommercialByContact(contactSim),
-            commercialService.getPdvsCommercial(contactSim),
-          ]);
-
-          setData({
-            stat: infoTransactionRes.data,
-            transaction: lastTransactionRes.data.Reponse,
-            statGrap: statRes.data.Reponse,
-            commercial: commercialRes.data.Reponse,
-            pdvs: pdvsRes.data.Reponse,
-          });
-
-          console.log(infoTransactionRes.data)
-
-          setLoading({
-            main: false,
-            graph: false,
-          });
+          setData((prevState) => ({ ...prevState, contactSim }));
+          fetchData(contactSim);
         }
       } catch (error) {
         console.error("Erreur :", error);
@@ -111,8 +93,99 @@ const DashboardCommercial = () => {
       }
     };
 
-    fetchData();
+    fetchUserRole();
   }, []);
+
+  const fetchData = async (contactSim) => {
+    fetchTransactionInfo(contactSim);
+    fetchLastTransactions(contactSim);
+    fetchStatData(contactSim);
+    fetchCommercialData(contactSim);
+    fetchPdvsData(contactSim);
+    fetchInfoGraph2(contactSim)
+  };
+
+  const fetchTransactionInfo = async (contactSim) => {
+    try {
+      const infoTransactionRes = await TransactionService.getInfoTransaction(
+        contactSim,
+        dateFormatted,
+      );
+      setData((prevState) => ({ ...prevState, stat: infoTransactionRes.data }));
+      setLoading((prevState) => ({ ...prevState, main: false }));
+    } catch (error) {
+      console.error("Erreur :", error);
+    }
+  };
+
+
+  const fetchInfoGraph2 = async (contactSim) => {
+    try {
+      const infoGraph2 = await TransactionService.getStatPerDate(
+        contactSim,
+        dateFormatted,
+      );
+      setData((prevState) => ({ ...prevState, statGrap2: infoGraph2.data.Reponse }));
+      setLoading((prevState) => ({ ...prevState, graph2: false }));
+    } catch (error) {
+      console.error("Erreur :", error);
+    }
+  };
+
+
+
+  const fetchLastTransactions = async (contactSim) => {
+    try {
+      const lastTransactionRes =
+        await TransactionService.get10lastTransaction(contactSim);
+      setData((prevState) => ({
+        ...prevState,
+        transaction: lastTransactionRes.data.Reponse,
+      }));
+    } catch (error) {
+      console.error("Erreur :", error);
+    }
+  };
+
+  const fetchStatData = async (contactSim) => {
+    try {
+      const statRes = await TransactionService.getStat(
+        contactSim,
+        lastWeekDay,
+        dateFormatted,
+      );
+      //console.log(statRes)
+      setData((prevState) => ({
+        ...prevState,
+        statGrap: statRes.data.Reponse,
+      }));
+      setLoading((prevState) => ({ ...prevState, graph: false }));
+    } catch (error) {
+      console.error("Erreur :", error);
+    }
+  };
+
+  const fetchCommercialData = async (contactSim) => {
+    try {
+      const commercialRes =
+        await commercialService.getCommercialByContact(contactSim);
+      setData((prevState) => ({
+        ...prevState,
+        commercial: commercialRes.data.Reponse,
+      }));
+    } catch (error) {
+      console.error("Erreur :", error);
+    }
+  };
+
+  const fetchPdvsData = async (contactSim) => {
+    try {
+      const pdvsRes = await commercialService.getPdvsCommercial(contactSim);
+      setData((prevState) => ({ ...prevState, pdvs: pdvsRes.data.Reponse }));
+    } catch (error) {
+      console.error("Erreur :", error);
+    }
+  };
 
   const configg = {
     data: data.statGrap,
@@ -123,19 +196,25 @@ const DashboardCommercial = () => {
       inset: 10,
     },
     legend: {
-      position: 'top-left',  // Change the position of the legend
-      layout: 'horizontal',  // Layout of the legend, can be 'horizontal' or 'vertical'
-    },
-    title: {
-      visible: true,
-      text: 'Graphique des Précipitations Moyennes Mensuelles',
-      style: {
-        fontSize: 25,
-        fontWeight: 'bold',
-        fill: '#222',
-      },
+      position: "top-left",
+      layout: "horizontal",
     },
   };
+
+  const config2 = {
+    data: data.statGrap2,
+    yField: "montant",
+    colorField: "nom",
+    group: true,
+    style: {
+      inset: 10,
+    },
+    legend: {
+      position: "top-left",
+      layout: "horizontal",
+    },
+  };
+
   const conicColors = {
     "0%": "#87d068",
     "50%": "#ffe58f",
@@ -298,6 +377,10 @@ const DashboardCommercial = () => {
           text: "CREDIT",
           value: "CREDIT",
         },
+        {
+          text: "RETOUR_UV",
+          value: "RETOUR_UV",
+        },
       ],
       onFilter: (value, record) => record.rechargeType.startsWith(value),
       filterSearch: true,
@@ -310,6 +393,8 @@ const DashboardCommercial = () => {
           color = "volcano";
         } else if (rechargeType === "CREDIT") {
           color = "red";
+        } else if (rechargeType === "RETOUR_UV") {
+          color = "orange";
         }
         return <Tag color={color}>{rechargeType}</Tag>;
       },
@@ -329,8 +414,6 @@ const DashboardCommercial = () => {
       ),
     },
   ];
-  
-  
 
   return (
     <div className="DashboardCommercial">
@@ -365,7 +448,7 @@ const DashboardCommercial = () => {
             />
           }
           title={"Creances"}
-          value={data.commercial.creances ?data.commercial.creances + "." : 0}
+          value={data.commercial.creances ? data.commercial.creances + "." : 0}
         />
         <DashboardCard
           icon={
@@ -380,7 +463,11 @@ const DashboardCommercial = () => {
             />
           }
           title={"Espèces"}
-          value={data.commercial.especeEnCours ? data.commercial.especeEnCours + "." : 0}
+          value={
+            data.commercial.especeEnCours
+              ? data.commercial.especeEnCours + "."
+              : 0
+          }
         />
         <DashboardCard
           icon={
@@ -395,7 +482,9 @@ const DashboardCommercial = () => {
             />
           }
           title={"Float Poussé"}
-          value={data.stat.montantRecharge ? data.stat.montantRecharge + "." : 0}
+          value={
+            data.stat.montantRecharge ? data.stat.montantRecharge + "." : 0
+          }
         />
         <DashboardCard
           icon={
@@ -410,7 +499,11 @@ const DashboardCommercial = () => {
             />
           }
           title={"Float Recu"}
-          value={data.stat.montantRechargeRecu ? data.stat.montantRechargeRecu + "." : 0}
+          value={
+            data.stat.montantRechargeRecu
+              ? data.stat.montantRechargeRecu + "."
+              : 0
+          }
         />
         <DashboardCard
           icon={
@@ -425,7 +518,9 @@ const DashboardCommercial = () => {
             />
           }
           title={"Retour Float"}
-          value={data.stat.montantRetourUV ? data.stat.montantRetourUV + "." : 0}
+          value={
+            data.stat.montantRetourUV ? data.stat.montantRetourUV + "." : 0
+          }
         />
       </Space>
       <Divider dashed />
@@ -458,7 +553,11 @@ const DashboardCommercial = () => {
             />
           }
           title={"Nombre Float recu"}
-          value={data.stat.nombreRechargeRecu ? data.stat.nombreRechargeRecu + "." : 0}
+          value={
+            data.stat.nombreRechargeRecu
+              ? data.stat.nombreRechargeRecu + "."
+              : 0
+          }
         />
 
         <DashboardCard
@@ -492,7 +591,7 @@ const DashboardCommercial = () => {
             }
             value={
               data.commercial.objectifMontant
-                ? data.commercial.objectifMontant+ " XOF"
+                ? data.commercial.objectifMontant + " XOF"
                 : 0 + " XOF"
             }
             prefix={<CalendarOutlined />}
@@ -517,7 +616,8 @@ const DashboardCommercial = () => {
         Les 5 dernieres transactions
       </Divider>
       <Space direction="vertical">
-        <Table className="tbl_transaction"
+        <Table
+          className="tbl_transaction"
           loading={loading.main}
           columns={columns}
           dataSource={data.transaction}
@@ -527,12 +627,35 @@ const DashboardCommercial = () => {
       <Divider orientation="left" dashed>
         Performances
       </Divider>
+
       <Space>
-        
-        {loading.graph ? <Spin style={{marginLeft:100}} className="custom-spin" /> : <Column {...configg} />}
-        
+        <div
+          style={{ width: "530px", padding: "6px" }}
+        >
+          {loading.graph2 ? (
+            <Spin className="custom-spin" />
+          ) : (
+            <Column {...config2} />
+          )}
+          <p style={{ fontStyle: "italic", fontSize: "12px", color: "#222" }}>
+            <AreaChartOutlined /> Transactions aujourd'hui
+          </p>
+        </div>
+
+        <div
+          style={{ width: "530px", padding: "6px" }}
+        >
+          {loading.graph ? (
+            <Spin className="custom-spin" />
+          ) : (
+            <Column {...configg} />
+          )}
+          <p style={{ fontStyle: "italic", fontSize: "12px", color: "#222" }}>
+            <AreaChartOutlined /> Transactions en 1 semaine
+          </p>
+        </div>
       </Space>
-      <Divider orientation="left" dashed >
+      <Divider orientation="left" dashed>
         Calendrier
       </Divider>
       <Space>

@@ -46,7 +46,7 @@ const RecouvrementSousAdv = () => {
   }
   return (
     <div className="RecourvrementSousAdv">
-      <h2 style={{ marginBottom: 25 }}>Recouvrement à effectués</h2>
+      <h2 style={{ marginBottom: 25 }}>Recouvrement à effectués <span style={{fontStyle:'italic', fontSize:16, color:'#555'}}>({commercial.length})</span></h2>
       <List
         itemLayout="horizontal"
         dataSource={commercial}
