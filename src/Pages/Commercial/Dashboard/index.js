@@ -646,6 +646,7 @@ const DashboardCommercial = () => {
           style={{ width: "530px", padding: "6px" }}
         >
           {loading.graph ? (
+            
             <Spin className="custom-spin" />
           ) : (
             <Column {...configg} />

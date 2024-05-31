@@ -5,13 +5,14 @@ import { Icon } from "leaflet";
 import "leaflet/dist/leaflet.css";
 
 import "./map.css";
-import { Divider } from "antd";
+import { Divider, Spin } from "antd";
 import { connexionService } from "../../../_services/connexion.service";
 import { commercialService } from "../../../_services/commercial.service";
 
 const PositionPdvs = () => {
   const [markers, setMarkers] = useState([]);
   const [positionCenter, setPositionCenter] = useState([5.379711, -4.060998])
+  const [loadingCard, setLoadingCard] = useState(true);
 
   useEffect(() => {
     connexionService
@@ -25,6 +26,7 @@ const PositionPdvs = () => {
               if(markers.length>0){
                 setPositionCenter(markers[0].geocode)
               }
+              setLoadingCard(false)
               //console.log(markers[0].geocode);
             })
             .catch((err) => console.error(err));
@@ -40,10 +42,14 @@ const PositionPdvs = () => {
 
   return (
     <div>
-      <Divider orientation="left">
-        Position geographique des points de ventes
-      </Divider>
-      <MapContainer center={positionCenter} zoom={13}>
+      
+      
+      {loadingCard ? <Spin size="large" className="custom-spin"/> :
+        
+       <div>
+          <h2>Position geographique des points de ventes</h2>
+          <Divider />
+          <MapContainer center={positionCenter} zoom={13}>
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -65,6 +71,9 @@ const PositionPdvs = () => {
           </Marker>
         ))}
       </MapContainer>
+       </div>
+      }
+      
     </div>
   );
 };
